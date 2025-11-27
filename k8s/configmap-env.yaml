@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: urlshortener-config
+  namespace: urlshortener
+data:
+  GO_SERVICE_URL: "http://go-service:8000"
+  NODE_SERVICE_URL: "http://node-service:3000"
+  PYTHON_SERVICE_URL: "http://python-service:5000"
+  EXTERNAL_GO_SERVICE_URL: "http://go-service:8000"
+  REDIS_URL: "redis:6379"

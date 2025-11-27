@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-service
+  namespace: urlshortener
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: go-service
+  template:
+    metadata:
+      labels:
+        app: go-service
+    spec:
+      containers:
+        - name: go-service
+          image: habib0905/urlshortener-go-service:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: PYTHON_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: urlshortener-config
+                  key: PYTHON_SERVICE_URL
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: urlshortener-config
+                  key: REDIS_URL  
+          volumeMounts:
+            - name: go-data
+              mountPath: /app/data
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi" 
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000 
+            initialDelaySeconds: 5
+            periodSeconds: 10  
+
+      volumes:
+        - name: go-data
+          persistentVolumeClaim:
+            claimName: go-data
