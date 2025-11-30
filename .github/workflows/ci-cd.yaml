@@ -1,0 +1,115 @@
+name: CI/CD - URL Shortener (self-hosted)
+
+on:
+  push:
+    branches: ["main"]
+
+
+env:
+  IMAGE_REGISTRY: docker.io
+  IMAGE_USER: habib0905
+  IMAGE_TAG: ${{ github.sha }}
+
+
+permission:
+  contents: read
+
+jobs:
+
+  sonar-scan:
+    name: SonarQube Analysis
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Verify Sonar reachable
+        run: |
+          echo "Checking Sonar at $SONAR_HOST_URL"
+          curl -sS "${{ secrets.SONAR_HOST_URL }}/api/system/status" || true          
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v4
+        with:
+          projectBaseDir: .
+          host-url: http://localhost:9000
+          token: ${{ secrets.SONARQUBE_TOKEN }}
+
+      - name: Wait for Quality Gate status
+        uses: SonarSource/sonarqube-quality-gate-check@v2.1.0
+        with:
+          # The action needs the URL and Token to poll the SonarQube API
+          sonarqubeUrl: ${{ secrets.SONAR_HOST_URL }}
+          token: ${{ secrets.SONAR_TOKEN }}
+
+
+  build-and-push:
+    name: Build and push Docker image 
+    runs-on: self-hosted
+    needs: sonar-scan
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
+      - name: Build and push go-service
+        run : |
+          docker build -t $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:$IMAGE_TAG ./go-service
+          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:$IMAGE_TAG
+          docker tag $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:$IMAGE_TAG $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:latest
+          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:latest         
+
+      - name: Build & push node-service
+        run: |
+          docker build -t $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:$IMAGE_TAG ./node-service
+          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:$IMAGE_TAG
+          docker tag $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:$IMAGE_TAG $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:latest
+          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:latest
+
+      - name: Build & push python-service
+        run: |
+          docker build -t $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:$IMAGE_TAG ./python-service
+          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:$IMAGE_TAG
+          docker tag $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:$IMAGE_TAG $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:latest
+          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:latest     
+
+
+  deploy:
+    name: Deploy to Minikube cluster
+    runs-on: self-hosted
+    needs: build-and-push
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure kubectl can talk to the cluster
+        run: |
+          kubectl version --client
+          kubectl get nodes
+
+      - name: Update k8s images and apply manifests
+        run: |
+          kubectl -n urlshortener set image deployment/go-service go-service=$IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:$IMAGE_TAG
+          kubectl -n urlshortener set image deployment/node-service node-service=$IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:$IMAGE_TAG
+          kubectl -n urlshortener set image deployment/python-service python-service=$IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:$IMAGE_TAG
+          kubectl apply -f k8s/ --recursive
+
+      - name: Verify deployments
+        run: |
+          kubectl -n urlshortener rollout status deployment/go-service --timeout=120s || true
+          kubectl -n urlshortener rollout status deployment/node-service --timeout=120s || true
+          kubectl -n urlshortener rollout status deployment/python-service --timeout=120s || true

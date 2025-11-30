@@ -1,0 +1,43 @@
+name: sonarqube 
+
+services:
+  sonarqube-db:
+    image: postgres:alpine
+    container_name: sonarqube-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonarqube
+    volumes:
+      # Persists database data on the host machine
+      - postgresql_data:/var/lib/postgresql/data
+
+  sonarqube:
+    # Use a specific, stable version tag instead of 'latest'
+    image: sonarqube:lts-community
+    container_name: sonarqube
+    restart: unless-stopped
+    ports:
+      # Maps port 9000 on the host to port 9000 in the container
+      - "9000:9000"
+    environment:
+      # Uses the service name 'sonarqube-db' as the hostname (Docker Compose handles networking automatically)
+      SONAR_JDBC_URL: jdbc:postgresql://sonarqube-db:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar
+    volumes:
+      # Persists SonarQube data, logs, and extensions
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    # Ensures the DB container starts before the SonarQube container attempts to connect
+    depends_on:
+      - sonarqube-db
+
+# Define the volumes used for persistence outside the service definitions
+volumes:
+  postgresql_data:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
