@@ -7,7 +7,7 @@ on:
 
 env:
   IMAGE_REGISTRY: docker.io
-  IMAGE_USER: habib0905
+  IMAGE_USER: {{ vars.DOCKERHUB_USERNAME }}
   IMAGE_TAG: ${{ github.sha }}
 
 
@@ -40,14 +40,14 @@ jobs:
         uses: sonarsource/sonarqube-scan-action@v4
         with:
           projectBaseDir: .
-          host-url: http://localhost:9000
+          host-url: ${{ vars.SONAR_HOST_URL }}
           token: ${{ secrets.SONARQUBE_TOKEN }}
 
       - name: Wait for Quality Gate status
         uses: SonarSource/sonarqube-quality-gate-check@v2.1.0
         with:
           # The action needs the URL and Token to poll the SonarQube API
-          sonarqubeUrl: ${{ secrets.SONAR_HOST_URL }}
+          sonarqubeUrl: ${{ vars.SONAR_HOST_URL }}
           token: ${{ secrets.SONAR_TOKEN }}
 
 
@@ -96,6 +96,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Ensure Minikube is running (start if not)
+        run: |
+          if ! minikube status >/dev/null 2>&1; then
+            minikube start --driver=docker
+          fi
+          minikube status
+
       - name: Ensure kubectl can talk to the cluster
         run: |
           kubectl version --client
@@ -113,3 +120,9 @@ jobs:
           kubectl -n urlshortener rollout status deployment/go-service --timeout=120s || true
           kubectl -n urlshortener rollout status deployment/node-service --timeout=120s || true
           kubectl -n urlshortener rollout status deployment/python-service --timeout=120s || true
+
+
+      - name: Show pods & services
+        run: |
+          kubectl -n urlshortener get pods -o wide
+          kubectl -n urlshortener get svc -o wide
