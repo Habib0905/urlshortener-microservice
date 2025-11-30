@@ -44,7 +44,7 @@ jobs:
           token: ${{ secrets.SONARQUBE_TOKEN }}
 
       - name: Wait for Quality Gate status
-        uses: SonarSource/sonarqube-quality-gate-check@v2.1.0
+        uses: sonarsource/sonarqube-quality-gate-action@master
         with:
           # The action needs the URL and Token to poll the SonarQube API
           sonarqubeUrl: ${{ vars.SONAR_HOST_URL }}
