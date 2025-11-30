@@ -6,7 +6,6 @@ on:
 
 
 env:
-  IMAGE_REGISTRY: docker.io
   IMAGE_USER: ${{ vars.DOCKERHUB_USERNAME }}
   IMAGE_TAG: ${{ github.sha }}
 
@@ -74,24 +73,24 @@ jobs:
 
       - name: Build and push go-service
         run : |
-          docker build -t $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:$IMAGE_TAG ./go-service
-          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:$IMAGE_TAG
-          docker tag $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:$IMAGE_TAG $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:latest
-          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-go-service:latest         
+          docker build -t $IMAGE_USER/urlshortener-go-service:$IMAGE_TAG ./go-service
+          docker push $IMAGE_USER/urlshortener-go-service:$IMAGE_TAG
+          docker tag $IMAGE_USER/urlshortener-go-service:$IMAGE_TAG $IMAGE_USER/urlshortener-go-service:latest
+          docker push $IMAGE_USER/urlshortener-go-service:latest         
 
       - name: Build & push node-service
         run: |
-          docker build -t $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:$IMAGE_TAG ./node-service
-          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:$IMAGE_TAG
-          docker tag $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:$IMAGE_TAG $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:latest
-          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-node-service:latest
+          docker build -t $IMAGE_USER/urlshortener-node-service:$IMAGE_TAG ./node-service
+          docker push $IMAGE_USER/urlshortener-node-service:$IMAGE_TAG
+          docker tag $IMAGE_USER/urlshortener-node-service:$IMAGE_TAG $IMAGE_USER/urlshortener-node-service:latest
+          docker push $IMAGE_USER/urlshortener-node-service:latest
 
       - name: Build & push python-service
         run: |
-          docker build -t $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:$IMAGE_TAG ./python-service
-          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:$IMAGE_TAG
-          docker tag $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:$IMAGE_TAG $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:latest
-          docker push $IMAGE_REGISTRY/$IMAGE_USER/urlshortener-python-service:latest     
+          docker build -t $IMAGE_USER/urlshortener-python-service:$IMAGE_TAG ./python-service
+          docker push $IMAGE_USER/urlshortener-python-service:$IMAGE_TAG
+          docker tag $IMAGE_USER/urlshortener-python-service:$IMAGE_TAG $IMAGE_USER/urlshortener-python-service:latest
+          docker push $IMAGE_USER/urlshortener-python-service:latest     
 
 
   deploy:
