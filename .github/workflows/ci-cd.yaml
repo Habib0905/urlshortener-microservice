@@ -7,7 +7,7 @@ on:
 
 env:
   IMAGE_REGISTRY: docker.io
-  IMAGE_USER: {{ vars.DOCKERHUB_USERNAME }}
+  IMAGE_USER: ${{ vars.DOCKERHUB_USERNAME }}
   IMAGE_TAG: ${{ github.sha }}
 
 
