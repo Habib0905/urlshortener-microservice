@@ -110,24 +110,24 @@ jobs:
 
       - name: Ensure kubectl can talk to the cluster
         run: |
-          minikube kubectl version --client
-          minikube kubectl get nodes
+          minikube kubectl -- version --client
+          minikube kubectl -- get nodes
 
       - name: Update k8s images and apply manifests
         run: |
-          minikube kubectl -n urlshortener set image deployment/go-service go-service=$IMAGE_USER/urlshortener-go-service:$IMAGE_TAG
-          minikube kubectl -n urlshortener set image deployment/node-service node-service=$IMAGE_USER/urlshortener-node-service:$IMAGE_TAG
-          minikube kubectl -n urlshortener set image deployment/python-service python-service=$IMAGE_USER/urlshortener-python-service:$IMAGE_TAG
-          minikube kubectl apply -f k8s/ --recursive
+          minikube kubectl -- -n urlshortener set image deployment/go-service go-service=$IMAGE_USER/urlshortener-go-service:$IMAGE_TAG
+          minikube kubectl -- -n urlshortener set image deployment/node-service node-service=$IMAGE_USER/urlshortener-node-service:$IMAGE_TAG
+          minikube kubectl -- -n urlshortener set image deployment/python-service python-service=$IMAGE_USER/urlshortener-python-service:$IMAGE_TAG
+          minikube kubectl -- apply -f k8s/ --recursive
 
       - name: Verify deployments
         run: |
-          minikube kubectl -n urlshortener rollout status deployment/go-service --timeout=120s || true
-          minikube kubectl -n urlshortener rollout status deployment/node-service --timeout=120s || true
-          minikube kubectl -n urlshortener rollout status deployment/python-service --timeout=120s || true
+          minikube kubectl -- -n urlshortener rollout status deployment/go-service --timeout=120s || true
+          minikube kubectl -- -n urlshortener rollout status deployment/node-service --timeout=120s || true
+          minikube kubectl -- -n urlshortener rollout status deployment/python-service --timeout=120s || true
 
 
       - name: Show pods & services
         run: |
-          minikube kubectl -n urlshortener get pods -o wide
-          minikube kubectl -n urlshortener get svc -o wide
+          minikube kubectl -- -n urlshortener get pods -o wide
+          minikube kubectl -- -n urlshortener get svc -o wide
