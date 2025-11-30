@@ -11,7 +11,7 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 
 
-permission:
+permissions:
   contents: read
 
 jobs:
