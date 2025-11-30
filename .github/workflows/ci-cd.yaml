@@ -34,21 +34,27 @@ jobs:
       - name: Verify Sonar reachable
         run: |
           echo "Checking Sonar at $SONAR_HOST_URL"
-          curl -sS "${{ secrets.SONAR_HOST_URL }}/api/system/status" || true          
+          curl -sS "${{ vars.SONAR_HOST_URL }}/api/system/status" || true          
 
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v4
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}        
         with:
           projectBaseDir: .
-          host-url: ${{ vars.SONAR_HOST_URL }}
-          token: ${{ secrets.SONARQUBE_TOKEN }}
 
-      - name: Wait for Quality Gate status
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          # The action needs the URL and Token to poll the SonarQube API
-          sonarqubeUrl: ${{ vars.SONAR_HOST_URL }}
-          token: ${{ secrets.SONAR_TOKEN }}
+          pollingTimeoutSec: 600
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }} 
+
+      - name: "SonarQube Quality Gate Status value"
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
 
 
   build-and-push:
