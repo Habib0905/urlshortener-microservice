@@ -3,4 +3,4 @@ resources:
 
 images:
   - name: habib0905/urlshortener-go-service
-    newTag: 3a4a8b9423382e09376541fa9d53b81d451f9599
+    newTag: ade9f023fb8e6127e589f1140a99d6bf9880967c
