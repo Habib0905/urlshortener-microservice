@@ -3,4 +3,4 @@ resources:
 
 images:
   - name: habib0905/urlshortener-node-service
-    newTag: ade9f023fb8e6127e589f1140a99d6bf9880967c
+    newTag: ae2aa5cfa2921f7d150614e1abec2fb74ce46794
