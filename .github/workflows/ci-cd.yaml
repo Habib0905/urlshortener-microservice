@@ -2,7 +2,7 @@ name: CI/CD - URL Shortener (self-hosted)
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "feature/*"]
 
 
 env:
