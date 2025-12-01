@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
       - name: node-service
-        image: habib0905/urlshortener-node-service:PUT_TAG_HERE
+        image: habib0905/urlshortener-node-service:10686cae180f831cb3a73c7a23df0af029bb5897

@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
       - name: python-service
-        image: habib0905/urlshortener-python-service:PUT_TAG_HERE
+        image: habib0905/urlshortener-python-service:10686cae180f831cb3a73c7a23df0af029bb5897
