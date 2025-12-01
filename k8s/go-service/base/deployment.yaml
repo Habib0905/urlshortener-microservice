@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: go-service
-          image: habib0905/urlshortener-go-service:v1
+          image: habib0905/urlshortener-go-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

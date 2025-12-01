@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: node-service
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Habib0905/urlshortener-microservice.git
+    targetRevision: feature/kustomize
+    path: k8s/node-service/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: urlshortener
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true

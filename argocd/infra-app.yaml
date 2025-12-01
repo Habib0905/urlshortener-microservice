@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infra
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Habib0905/urlshortener-microservice.git
+    targetRevision: feature/kustomize
+    path: k8s/infra
+    directory:
+      recurse: true
+      jsonnet: {}    
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: urlshortener
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true
