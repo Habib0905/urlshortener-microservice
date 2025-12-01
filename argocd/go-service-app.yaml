@@ -6,7 +6,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/Habib0905/urlshortener-microservice.git
-    targetRevision: feature/kustomize
+    targetRevision: main
     path: k8s/go-service/overlays/prod
   destination:
     server: https://kubernetes.default.svc
