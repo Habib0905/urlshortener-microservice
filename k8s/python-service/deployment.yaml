@@ -19,7 +19,7 @@ spec:
       containers:
         - name: python-service
           image: habib0905/urlshortener-python-service:v1
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:  
             - containerPort: 5000
           envFrom:
