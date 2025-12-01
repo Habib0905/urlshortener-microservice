@@ -2,4 +2,7 @@ resources:
   - ../../base
 
 patches:
-  - image-patch.yaml
+  - path: image-patch.yaml
+    target:
+      kind: Deployment
+      name: node-service
