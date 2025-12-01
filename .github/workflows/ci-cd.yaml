@@ -93,10 +93,10 @@ jobs:
           docker push $IMAGE_USER/urlshortener-python-service:latest     
 
       - name: Update Kustomize image patches
-          run: |
-            sed -i "s|PUT_TAG_HERE|$IMAGE_TAG|g" k8s/go-service/overlays/prod/image-patch.yaml
-            sed -i "s|PUT_TAG_HERE|$IMAGE_TAG|g" k8s/node-service/overlays/prod/image-patch.yaml
-            sed -i "s|PUT_TAG_HERE|$IMAGE_TAG|g" k8s/python-service/overlays/prod/image-patch.yaml
+        run: |
+          sed -i "s|PUT_TAG_HERE|$IMAGE_TAG|g" k8s/go-service/overlays/prod/image-patch.yaml
+          sed -i "s|PUT_TAG_HERE|$IMAGE_TAG|g" k8s/node-service/overlays/prod/image-patch.yaml
+          sed -i "s|PUT_TAG_HERE|$IMAGE_TAG|g" k8s/python-service/overlays/prod/image-patch.yaml
 
     # -------------------------------
     # Commit & push changes
