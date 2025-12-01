@@ -92,11 +92,12 @@ jobs:
           docker tag $IMAGE_USER/urlshortener-python-service:$IMAGE_TAG $IMAGE_USER/urlshortener-python-service:latest
           docker push $IMAGE_USER/urlshortener-python-service:latest     
 
-      - name: Update Kustomize image patches
+      - name: Update Kustomize image tag
         run: |
-          sed -i "s|PUT_TAG_HERE|$IMAGE_TAG|g" k8s/go-service/overlays/prod/image-patch.yaml
-          sed -i "s|PUT_TAG_HERE|$IMAGE_TAG|g" k8s/node-service/overlays/prod/image-patch.yaml
-          sed -i "s|PUT_TAG_HERE|$IMAGE_TAG|g" k8s/python-service/overlays/prod/image-patch.yaml
+          sed -i "s|newTag:.*|newTag: ${{ github.sha }}|g" k8s/go-service/overlays/prod/kustomization.yaml
+          sed -i "s|newTag:.*|newTag: ${{ github.sha }}|g" k8s/node-service/overlays/prod/kustomization.yaml
+          sed -i "s|newTag:.*|newTag: ${{ github.sha }}|g" k8s/python-service/overlays/prod/kustomization.yaml
+
 
     # -------------------------------
     # Commit & push changes
