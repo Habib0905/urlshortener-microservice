@@ -170,40 +170,6 @@ Redis performance
 
 Monitoring components run inside the cluster.
 
-📂 Repository Structure
-urlshortener-microservice/
-│
-├── go-service/
-│   ├── main.go
-│   ├── Dockerfile
-│   └── ...
-│
-├── python-service/
-│   ├── app.py
-│   ├── Dockerfile
-│   └── ...
-│
-├── node-service/
-│   ├── index.js
-│   ├── Dockerfile
-│   └── ...
-│
-├── k8s/
-│   ├── deployments/
-│   ├── services/
-│   ├── ingress/
-│   ├── hpa/
-│   └── redis/
-│
-├── argo-apps/   (optional GitOps folder)
-│
-├── .github/workflows/
-│   ├── go-ci.yml
-│   ├── python-ci.yml
-│   ├── node-ci.yml
-│
-└── README.md
-
 🚀 Local Development
 1. Clone the repo
 git clone https://github.com/Habib0905/urlshortener-microservice
