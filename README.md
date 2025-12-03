@@ -1,216 +1,204 @@
-🚀 URL Shortener Microservices Platform
 
-A production-ready, Kubernetes-based microservices application using GitOps, CI/CD, centralized caching, and auto-scaling.
 
-📌 Overview
+# URL Shortener Microservices Platform
 
-This project implements a URL Shortener application architected as a microservices platform, built with:
+A production-ready URL Shortener application built using three microservices (Go, Python, Node.js), deployed on Kubernetes with full CI/CD and GitOps automation.
 
-Go Service — Core redirection + analytics
+---
 
-Python Service — URL generation & API gateway
+## Overview
 
-Node.js Service — URL validation & metadata
+This project demonstrates a complete end-to-end DevOps workflow, including:
 
-Redis — Shared caching layer
+- Multi-service microservices architecture
+- Redis caching layer
+- Docker-based containerization
+- CI pipelines using GitHub Actions
+- SonarQube static analysis with Quality Gates
+- DockerHub image publishing
+- GitOps deployment using Kustomize and Argo CD
+- Kubernetes deployments with autoscaling and ingress
+- Monitoring using Prometheus and Grafana
 
-Kubernetes — Deployment, scaling, routing
+---
 
-Argo CD — GitOps-based automated deployment
-
-SonarQube — Code quality and static analysis
-
-DockerHub — Image registry
-
-Prometheus & Grafana — Monitoring & alerting
-
-The platform is designed with real-world DevOps practices including containerization, CI/CD, autoscaling, and ingress traffic routing.
-
-🏗️ Architecture Diagram
+## Architecture Diagram
 
 <img width="1920" height="1080" alt="Architectural Diagram" src="https://github.com/user-attachments/assets/df460549-9610-4e18-8876-e0a920bd42b0" />
 
-🔧 Microservices
-1️⃣ Python Service
+---
 
-Acts as the main entrypoint for API requests
+## Microservices
 
-Generates shortened URLs
+### 1. Python Service
+- Acts as the main entrypoint for user requests.
+- Generates short URLs.
+- Communicates with Go and Node services internally.
+- Uses Redis for caching.
 
-Communicates with Go and Node services
+### 2. Go Service
+- Handles URL redirection.
+- Performs analytics-related logic.
+- Interacts with Python and Redis.
 
-Uses Redis for caching
+### 3. Node.js Service
+- Validates long URLs.
+- Performs preprocessing and metadata handling.
+- Communicates with Python service.
 
-2️⃣ Go Service
+### 4. Redis Cache
+- Shared caching system across all microservices.
 
-Performs URL redirection
+---
 
-Handles analytics logic
+## Repository Structure
 
-Reads cached keys from Redis
+urlshortener-microservice/
+│
+├── go-service/
+│ ├── main.go
+│ ├── Dockerfile
+│
+├── python-service/
+│ ├── app.py
+│ ├── Dockerfile
+│
+├── node-service/
+│ ├── index.js
+│ ├── Dockerfile
+│
+├── k8s/
+│ ├── deployments/
+│ ├── services/
+│ ├── ingress/
+│ ├── hpa/
+│ └── redis/
+│
+├── .github/workflows/
+│ ├── go-ci.yml
+│ ├── python-ci.yml
+│ ├── node-ci.yml
+│
+└── README.md
 
-Exposes lightweight, fast endpoints
 
-3️⃣ Node.js Service
+---
 
-Validates long URLs
+## CI and CD Pipeline
 
-Extracts metadata or performs preprocessing
+### Continuous Integration (GitHub Actions)
 
-Communicates with the Python service
+Each microservice has its own dedicated CI pipeline that:
 
-4️⃣ Redis Service
+- Installs dependencies
+- Runs static analysis using SonarQube
+- Enforces Quality Gates
+- Builds Docker images
+- Pushes images to DockerHub
 
-Shared in-memory caching for all services
+### Continuous Deployment (GitOps)
 
-Stores URL mappings and frequently accessed values
+- Kubernetes manifests are stored in a GitOps repository.
+- Kustomize patches update image versions.
+- Argo CD continuously synchronizes desired state into the Kubernetes cluster.
 
-🐳 Containerization (Docker)
+---
 
-Each service includes a Dockerfile:
+## Kubernetes Deployment
 
-go-service/
-python-service/
-node-service/
-redis/ (optional)
+### Components Used
 
+- Deployments for microservices
+- Services (ClusterIP) for internal communication
+- Horizontal Pod Autoscalers for scaling
+- NGINX Ingress Controller for routing
+- Persistent Volume Claims for Redis (optional)
+- ConfigMaps and Secrets (optional)
 
-Images are built and pushed to DockerHub via GitHub Actions CI.
+### Deploy all resources
 
-☸️ Kubernetes Deployment (K8s)
-Kubernetes components used:
 
-Deployment for each microservice
 
-Service (ClusterIP) per microservice
-
-HorizontalPodAutoscaler (HPA)
-
-PersistentVolumeClaim (if Redis is persistence-enabled)
-
-ConfigMaps & Secrets (optional)
-
-NGINX Ingress
-
-Ingress Routing
-
-All requests to:
-
-http://urlshortener.local
-
-
-are routed to the Python service, which internally communicates with Go and Node services.
-
-Auto-scaling
-
-Each service has an HPA configured based on CPU usage.
-
-🔁 CI/CD Pipeline
-🔍 1. Code pushed to GitHub
-
-Triggers CI workflow for Go, Python, Node services.
-
-🧪 2. SonarQube Code Quality Check
-
-Each service:
-
-Runs static code analysis
-
-Sends report to SonarQube server
-
-Pipeline waits for Quality Gate to pass
-
-🛠️ 3. Build & Push Docker Images
-
-Images are built using Docker buildx and pushed to DockerHub:
-Example image names:
-
-habib0905/go-service:latest
-habib0905/python-service:latest
-habib0905/node-service:latest
-
-🚀 4. Continuous Deployment with Argo CD
-
-Argo CD continuously watches the manifest repo and syncs changes automatically to the cluster:
-
-Deployments
-
-Services
-
-HPAs
-
-Ingress
-
-Redis
-
-This ensures full GitOps automation.
-
-📊 Monitoring Stack
-Prometheus
-
-Scrapes metrics from Kubernetes components
-
-Pulls service metrics (if instrumented)
-
-Used by HPAs for autoscaling
-
-Grafana
-
-Visual dashboards for:
-
-Service health
-
-Request latency
-
-CPU/memory usage
-
-Pod scaling behavior
-
-Redis performance
-
-Monitoring components run inside the cluster.
-
-🚀 Local Development
-1. Clone the repo
-git clone https://github.com/Habib0905/urlshortener-microservice
-cd urlshortener-microservice
-
-2. Run individual services locally (example: Python)
-cd python-service
-pip install -r requirements.txt
-python app.py
-
-3. Build a Docker image
-docker build -t python-service .
-
-☸️ Deploy to Kubernetes
-Apply manifests:
 kubectl apply -f k8s/
 
-Verify pods:
+
+### Verify running workloads
+
+
+
 kubectl get pods
+kubectl get svc
+kubectl get hpa
 
-Access via Ingress:
 
-Add to /etc/hosts:
+### Access the application
 
-127.0.0.1   urlshortener.local
+Add this entry to your local hosts file:
+
+
+
+127.0.0.1 urlshortener.local
 
 
 Then open:
 
+
+
 http://urlshortener.local
 
-🧩 Future Enhancements
 
-Canary deployments with Argo Rollouts
+---
 
-👤 Author
+## Monitoring Stack
 
-Habib Hussain
+### Node Exporter
+Collects node-level metrics.
+
+### Prometheus
+Scrapes and stores metrics.
+
+### Grafana
+Provides dashboards and visualizations.
+
+---
+
+
+
+### Clone the repository
+
+
+
+git clone https://github.com/Habib0905/urlshortener-microservice
+
+cd urlshortener-microservice
+
+
+
+
+### Build Docker image
+
+
+
+docker build -t python-service .
+
+
+---
+
+## Future Enhancements
+
+- Add PostgreSQL as a persistent datastore
+- Add canary deployments using Argo Rollouts
+
+---
+
+## Author
+
+Habib Hussain  
 DevOps Engineer
-LinkedIn: https://www.linkedin.com/in/habib-hussain-402250242/
 
-⭐ If this project helped you, consider giving it a star!
+---
 
-Your support means a lot! 🌟
+## License
+
+This project is open source and free to use.
+
