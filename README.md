@@ -52,7 +52,7 @@ This project demonstrates a complete end-to-end DevOps workflow, including:
 ---
 
 ## Repository Structure
-
+```
 urlshortener-microservice/
 │
 ├── go-service/
@@ -81,7 +81,7 @@ urlshortener-microservice/
 │
 └── README.md
 
-
+```
 ---
 
 ## CI and CD Pipeline
